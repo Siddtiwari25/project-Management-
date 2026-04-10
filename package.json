@@ -1,0 +1,29 @@
+{
+  "name": "galactic-flow-pm",
+  "version": "1.0.0",
+  "description": "Space-themed project management system with analytics, team chat, and task tracking",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "dev": "live-server --port=3000"
+  },
+  "keywords": [
+    "project-management",
+    "task-manager",
+    "team-collaboration",
+    "productivity",
+    "space-theme",
+    "analytics",
+    "drag-drop"
+  ],
+  "author": "Galactic Flow Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/galactic-flow-pm.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/galactic-flow-pm/issues"
+  },
+  "homepage": "https://your-username.github.io/galactic-flow-pm"
+}
