@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>✨ Galactic Flow — Space Project Manager ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 10% 30%, #0a0f1e, #03060c);
+            color: #eef5ff;
+            min-height: 100vh;
+            padding: 16px 12px;
+            transition: background 0.3s ease, color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        body.light-theme {
+            background: linear-gradient(135deg, #e8f0ff 0%, #d4e4ff 100%);
+            color: #1a2a4f;
+        }
+        body.light-theme .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 100, 200, 0.2);
+            color: #1a2a4f;
+        }
+        body.light-theme input, body.light-theme textarea, body.light-theme select {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #7ba0c0;
+            color: #1a2a4f;
+        }
+        body.light-theme .project-item, body.light-theme .task-item {
+            background: rgba(255, 255, 255, 0.8);
+            border-left-color: #2b6cb0;
+            color: #1a2a4f;
+        }
+        body.light-theme .badge {
+            background: #2b6cb0;
+            color: white;
+        }
+        body.light-theme .progress-bar-bg {
+            background: #cbd5e0;
+        }
+        body.light-theme button {
+            background: rgba(43, 108, 176, 0.85);
+            color: white;
+        }
+        body.light-theme .footer {
+            background: rgba(255, 255, 255, 0.85);
+            color: #1a2a4f;
+        }
+
+        .glass-card {
+            background: rgba(15, 25, 45, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            border: 1px solid rgba(72, 187, 255, 0.25);
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+
+        button, .btn-icon {
+            cursor: pointer;
+            background: rgba(20, 40, 70, 0.8);
+            border: none;
+            border-radius: 40px;
+            padding: 10px 20px;
+            color: white;
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
+            font-size: 14px;
+            touch-action: manipulation;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        input, textarea, select {
+            background: rgba(0, 5, 15, 0.7);
+            border: 1px solid #2c4f6e;
+            border-radius: 28px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 0.9rem;
+            outline: none;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            -webkit-appearance: none;
+        }
+
+        input:focus, textarea:focus {
+            border-color: #4bc0ff;
+            box-shadow: 0 0 8px rgba(75, 192, 255, 0.3);
+        }
+
+        .project-item, .task-item {
+            background: rgba(10, 20, 35, 0.7);
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+            margin-bottom: 14px;
+            padding: 14px 16px;
+            border-left: 4px solid #00e0ff;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .progress-bar-bg {
+            background: #1e2a3a;
+            border-radius: 40px;
+            height: 10px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #2bd4ff, #a46eff);
+            border-radius: 40px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .badge {
+            background: #2c5f8a;
+            border-radius: 60px;
+            padding: 4px 12px;
+            font-size: 0.7rem;
+            display: inline-block;
+        }
+
+        .fade-in {
+            animation: fadeUp 0.35s ease-out;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .notification-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            left: 20px;
+            max-width: 350px;
+            margin: 0 auto;
+            background: rgba(10, 25, 45, 0.95);
+            backdrop-filter: blur(12px);
+            border-radius: 50px;
+            padding: 12px 20px;
+            border-left: 5px solid #3eff9e;
+            z-index: 1000;
+            animation: slideInMobile 0.3s ease;
+            font-size: 14px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+
+        @keyframes slideInMobile {
+            from { opacity: 0; transform: translateY(30px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+
+        .dragging {
+            opacity: 0.4;
+            transform: rotate(2deg);
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4bc0ff;
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 12px 10px;
+            }
+            button {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            .glass-card {
+                border-radius: 20px;
+            }
+            .project-item, .task-item {
+                padding: 12px 14px;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+            .notification-toast {
+                bottom: 12px;
+                right: 12px;
+                left: 12px;
+                font-size: 12px;
+                padding: 10px 16px;
+            }
+        }
+
+        .task-complete {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #2bd4ff;
+        }
+
+        .modal-open {
+            overflow: hidden;
+        }
+
+        .delete-project-btn, .delete-task-btn, .delete-reminder {
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .delete-project-btn:hover, .delete-task-btn:hover, .delete-reminder:hover {
+            opacity: 0.8;
+        }
+
+        .task-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .site-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0, 255, 255, 0.1);
+            padding: 6px 16px 6px 12px;
+            border-radius: 60px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            transition: all 0.3s ease;
+        }
+        .site-logo:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+        .logo-icon {
+            font-size: 32px;
+            filter: drop-shadow(0 0 5px #00e0ff);
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-3px); }
+        }
+        .logo-text {
+            font-weight: 700;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, #fff, #00e0ff);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .logo-sub {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        .footer {
+            margin-top: 40px;
+            padding: 20px 24px;
+            background: rgba(10, 20, 35, 0.6);
+            backdrop-filter: blur(12px);
+            border-radius: 30px;
+            border: 1px solid rgba(72, 187, 255, 0.2);
+            transition: all 0.3s ease;
+            animation: footerGlow 4s ease-in-out infinite;
+        }
+        @keyframes footerGlow {
+            0%, 100% { box-shadow: 0 0 5px rgba(0, 224, 255, 0.2); border-color: rgba(72, 187, 255, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(0, 224, 255, 0.4); border-color: rgba(0, 224, 255, 0.5); }
+        }
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+        .footer-copyright {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        .footer-stats {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .footer-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 5px 12px;
+            border-radius: 40px;
+        }
+        .footer-social {
+            display: flex;
+            gap: 12px;
+        }
+        .footer-social a {
+            color: #4bc0ff;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+        .footer-social a:hover {
+            transform: translateY(-3px);
+            color: #fff;
+            text-shadow: 0 0 8px #00e0ff;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .rotating-star {
+            display: inline-block;
+            animation: spin 8s linear infinite;
+        }
+
+        .quick-stats {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 20px;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            backdrop-filter: blur(4px);
+        }
+        .stat-number {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2bd4ff;
+        }
+
+        .export-btn {
+            background: linear-gradient(135deg, #2b6cb0, #805ad5);
+        }
+        
+        /* Analytics canvas container fix */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            min-height: 200px;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="max-w-7xl mx-auto px-2 md:px-4" style="flex: 1;">
+    <!-- HEADER with Logo -->
+    <div class="flex flex-wrap justify-between items-center mb-6 gap-3">
+        <div class="site-logo">
+            <div class="logo-icon">
+                <i class="fas fa-meteor rotating-star"></i>
+            </div>
+            <div>
+                <div class="logo-text">GALACTIC FLOW</div>
+                <div class="logo-sub">Project Management • Deep Space</div>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button id="themeToggleBtn" class="dark-light-toggle text-sm"><i class="fas fa-moon"></i> <span id="themeIconText">Dark</span></button>
+            <button id="showAnalyticsBtn" class="bg-purple-700/70 text-sm"><i class="fas fa-chart-line"></i> <span class="hidden sm:inline">Analytics</span></button>
+            <button id="exportDataBtn" class="export-btn text-sm"><i class="fas fa-download"></i> <span class="hidden sm:inline">Export</span></button>
+        </div>
+    </div>
+
+    <!-- Quick Stats Widget -->
+    <div class="quick-stats fade-in" id="quickStats">
+        <div class="stat-card"><i class="fas fa-rocket"></i> <span>Projects: <span id="statProjects" class="stat-number">0</span></span></div>
+        <div class="stat-card"><i class="fas fa-tasks"></i> <span>Tasks: <span id="statTasks" class="stat-number">0</span></span></div>
+        <div class="stat-card"><i class="fas fa-check-circle"></i> <span>Completed: <span id="statCompleted" class="stat-number">0</span></span></div>
+        <div class="stat-card"><i class="fas fa-users"></i> <span>Team: <span id="statMessages" class="stat-number">0</span></span></div>
+    </div>
+
+    <!-- CREATE PROJECT -->
+    <div class="glass-card p-4 md:p-5 mb-6 fade-in">
+        <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex-1">
+                <label class="text-xs opacity-80"><i class="fas fa-globe"></i> Project name</label>
+                <input type="text" id="projectNameInput" placeholder="e.g., Mars Colony Mission" class="w-full">
+            </div>
+            <div class="flex-1">
+                <label class="text-xs opacity-80"><i class="far fa-calendar-alt"></i> Deadline</label>
+                <input type="date" id="projectDeadlineInput" class="w-full">
+            </div>
+            <button id="createProjectBtn" class="bg-cyan-600/80 px-4 py-2 mt-auto"><i class="fas fa-plus-circle"></i> Launch</button>
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="grid lg:grid-cols-3 gap-5">
+        <!-- PROJECTS LIST -->
+        <div class="lg:col-span-2 glass-card p-4 md:p-5">
+            <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+                <h2 class="text-lg md:text-xl font-semibold"><i class="fas fa-space-shuttle"></i> Active Missions</h2>
+                <div class="flex gap-2">
+                    <button id="refreshProjectsBtn" class="text-sm"><i class="fas fa-sync-alt"></i> sync</button>
+                    <button id="clearCompletedBtn" class="text-sm bg-amber-700/50"><i class="fas fa-broom"></i> Clear Done</button>
+                </div>
+            </div>
+            <div id="projectsContainer" class="space-y-3 max-h-[550px] overflow-y-auto pr-1"></div>
+            <div id="noProjectsMsg" class="text-center py-10 opacity-60 hidden">✨ No projects yet. Create your first mission ✨</div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="space-y-5">
+            <div class="glass-card p-4">
+                <h3 class="font-bold mb-2 text-base"><i class="fas fa-user-astronaut"></i> Crew Chat 💬</h3>
+                <div id="chatMessages" class="h-36 overflow-y-auto text-sm bg-black/30 rounded-xl p-2 mb-2 space-y-1"></div>
+                <div class="flex gap-2">
+                    <input type="text" id="chatInput" placeholder="Message to team..." class="flex-1 text-sm">
+                    <button id="sendChatBtn" class="px-3 py-2 bg-cyan-700"><i class="fas fa-paper-plane"></i></button>
+                </div>
+                <div class="mt-3 border-t border-cyan-800/40 pt-2">
+                    <label class="text-xs"><i class="fas fa-paperclip"></i> Attach file</label>
+                    <input type="file" id="fileUploader" class="text-xs block mt-1 w-full">
+                    <div id="fileList" class="text-xs mt-2 space-y-1 max-h-20 overflow-auto"></div>
+                </div>
+                <div class="mt-2">
+                    <button id="voiceSimulateBtn" class="text-xs w-full bg-purple-800/50"><i class="fas fa-microphone"></i> 🎤 Simulate Voice Note</button>
+                </div>
+            </div>
+
+            <div class="glass-card p-4">
+                <h3 class="font-bold text-base"><i class="fas fa-bell"></i> ⏰ Reminders</h3>
+                <div id="remindersList" class="text-sm mt-2 space-y-1 max-h-32 overflow-auto"></div>
+                <div class="mt-3 flex flex-col sm:flex-row gap-2">
+                    <input type="date" id="reminderDate" class="text-xs flex-1">
+                    <input type="text" id="reminderText" placeholder="Reminder note" class="text-xs flex-1">
+                    <button id="addReminderBtn" class="text-xs px-3 py-2 bg-indigo-800"><i class="fas fa-plus"></i> Add</button>
+                </div>
+                <button id="snoozeRemindersBtn" class="text-xs w-full mt-2 bg-gray-700/50"><i class="fas fa-clock"></i> Snooze all for 1 hour</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ANALYTICS MODAL - FIXED VERSION -->
+    <div id="analyticsModal" class="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50 hidden transition-all duration-300" style="padding: 16px;">
+        <div class="glass-card w-full max-w-3xl mx-4 p-5 transform transition-all duration-300 scale-95 opacity-0" id="analyticsCard">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl md:text-2xl font-bold"><i class="fas fa-chart-pie"></i> Galactic Analytics 📊</h2>
+                <button id="closeAnalyticsBtn" class="text-2xl w-8 h-8 rounded-full hover:bg-white/20">&times;</button>
+            </div>
+            <div class="grid md:grid-cols-2 gap-5">
+                <div class="chart-container">
+                    <canvas id="projectChart" width="400" height="300" style="width:100%; height:auto; max-height:250px;"></canvas>
+                    <p class="text-center text-xs mt-2">Tasks completion per project</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="progressChart" width="400" height="300" style="width:100%; height:auto; max-height:250px;"></canvas>
+                    <p class="text-center text-xs mt-2">Overall productivity</p>
+                </div>
+            </div>
+            <div class="mt-5 text-center text-sm border-t border-cyan-700/40 pt-3">
+                <i class="fas fa-chart-simple"></i> <strong>Project Statistics:</strong> 
+                <span id="analyticsSummary">Loading...</span>
+            </div>
+            <div class="mt-3 text-center text-xs opacity-70">
+                <i class="fas fa-chart-bar"></i> Real-time analytics | Total Progress Dashboard
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ANIMATED FOOTER -->
+<div class="footer">
+    <div class="footer-content">
+        <div class="footer-copyright">
+            <i class="fas fa-copyright"></i> 2025 Galactic Flow | <i class="fas fa-star-of-life"></i> Project Management System
+        </div>
+        <div class="footer-stats" id="footerStats">
+            <div class="footer-stat-item"><i class="fas fa-chart-line"></i> <span id="footerProductivity">0%</span> productivity</div>
+            <div class="footer-stat-item"><i class="fas fa-clock"></i> <span id="footerTime">Live</span></div>
+        </div>
+        <div class="footer-social">
+            <a href="#" id="socialGithub"><i class="fab fa-github"></i></a>
+            <a href="#" id="socialTwitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" id="socialDiscord"><i class="fab fa-discord"></i></a>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ==================== DATA MODELS ====================
+    let projects = [];
+    let teamMessages = [];
+    let reminders = [];
+    let uploadedFiles = [];
+    
+    // Chart instances
+    let projChart = null;
+    let progChart = null;
+    
+    // DOM Elements cache
+    const dom = {
+        projectsContainer: document.getElementById('projectsContainer'),
+        noProjectsMsg: document.getElementById('noProjectsMsg'),
+        chatMessages: document.getElementById('chatMessages'),
+        remindersList: document.getElementById('remindersList'),
+        fileList: document.getElementById('fileList'),
+        statProjects: document.getElementById('statProjects'),
+        statTasks: document.getElementById('statTasks'),
+        statCompleted: document.getElementById('statCompleted'),
+        statMessages: document.getElementById('statMessages'),
+        footerProductivity: document.getElementById('footerProductivity'),
+        footerTime: document.getElementById('footerTime'),
+        analyticsSummary: document.getElementById('analyticsSummary')
+    };
+
+    // Load data with fallback demo data
+    function loadData() {
+        try {
+            const storedProjects = localStorage.getItem('space_projects_v5');
+            if(storedProjects) projects = JSON.parse(storedProjects);
+            const storedMsgs = localStorage.getItem('team_chat_v5');
+            if(storedMsgs) teamMessages = JSON.parse(storedMsgs);
+            const storedReminders = localStorage.getItem('reminders_list_v5');
+            if(storedReminders) reminders = JSON.parse(storedReminders);
+            const storedFiles = localStorage.getItem('uploaded_files_v5');
+            if(storedFiles) uploadedFiles = JSON.parse(storedFiles);
+        } catch(e) { console.warn(e); }
+        
+        if(projects.length === 0) {
+            const now = Date.now();
+            projects = [
+                { 
+                    id: now + 100, 
+                    name: "🌌 Andromeda Expedition", 
+                    deadline: new Date(now + 86400000 * 14).toISOString().slice(0,10), 
+                    tasks: [
+                        { id: now + 1, text: "Build warp drive", completed: false, dueDate: new Date(now + 86400000 * 5).toISOString().slice(0,10), comments: [] },
+                        { id: now + 2, text: "Recruit astronauts", completed: true, dueDate: new Date(now + 86400000 * 2).toISOString().slice(0,10), comments: [] },
+                        { id: now + 3, text: "Design spaceship AI", completed: false, dueDate: null, comments: [] }
+                    ]
+                },
+                { 
+                    id: now + 200, 
+                    name: "🛸 Lunar Base Alpha", 
+                    deadline: new Date(now + 86400000 * 30).toISOString().slice(0,10), 
+                    tasks: [
+                        { id: now + 4, text: "Establish communication", completed: false, dueDate: null, comments: [] },
+                        { id: now + 5, text: "Build habitat modules", completed: false, dueDate: new Date(now + 86400000 * 15).toISOString().slice(0,10), comments: [] }
+                    ]
+                },
+                { 
+                    id: now + 300, 
+                    name: "🚀 Mars Colony", 
+                    deadline: new Date(now + 86400000 * 60).toISOString().slice(0,10), 
+                    tasks: [
+                        { id: now + 6, text: "Design landing system", completed: true, dueDate: null, comments: [] },
+                        { id: now + 7, text: "Train astronauts", completed: false, dueDate: new Date(now + 86400000 * 10).toISOString().slice(0,10), comments: [] }
+                    ]
+                }
+            ];
+        }
+        if(teamMessages.length === 0) teamMessages.push({ text: "👽 Welcome to Stellar Flow! Collaborate here.", timestamp: new Date().toLocaleTimeString() });
+        if(reminders.length === 0) reminders.push({ date: new Date().toISOString().slice(0,10), text: "Weekly sync with team" });
+        saveAll();
+    }
+
+    function saveAll() {
+        localStorage.setItem('space_projects_v5', JSON.stringify(projects));
+        localStorage.setItem('team_chat_v5', JSON.stringify(teamMessages));
+        localStorage.setItem('reminders_list_v5', JSON.stringify(reminders));
+        localStorage.setItem('uploaded_files_v5', JSON.stringify(uploadedFiles));
+        updateQuickStats();
+        updateFooterStats();
+    }
+
+    function showToast(msg, isError = false) {
+        const toast = document.createElement('div');
+        toast.className = 'notification-toast';
+        toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-bell'}"></i> ${msg}`;
+        if(isError) toast.style.borderLeftColor = '#ff6b6b';
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 2700);
+    }
+
+    function pushNotify(title, body) {
+        if (Notification.permission === "granted") {
+            new Notification(title, { body });
+        } else if (Notification.permission !== "denied") {
+            Notification.requestPermission();
+        }
+        showToast(`${title}: ${body}`);
+    }
+
+    function calcProgress(project) {
+        if(!project.tasks?.length) return 0;
+        return (project.tasks.filter(t => t.completed).length / project.tasks.length) * 100;
+    }
+
+    function escapeHtml(str) { 
+        if(!str) return ''; 
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
+    }
+
+    function updateQuickStats() {
+        const totalProjects = projects.length;
+        const totalTasks = projects.reduce((sum, p) => sum + (p.tasks?.length || 0), 0);
+        const completedTasks = projects.reduce((sum, p) => sum + (p.tasks?.filter(t => t.completed).length || 0), 0);
+        if(dom.statProjects) dom.statProjects.innerText = totalProjects;
+        if(dom.statTasks) dom.statTasks.innerText = totalTasks;
+        if(dom.statCompleted) dom.statCompleted.innerText = completedTasks;
+        if(dom.statMessages) dom.statMessages.innerText = teamMessages.length;
+    }
+
+    function updateFooterStats() {
+        const totalTasks = projects.reduce((sum, p) => sum + (p.tasks?.length || 0), 0);
+        const completedTasks = projects.reduce((sum, p) => sum + (p.tasks?.filter(t => t.completed).length || 0), 0);
+        const productivity = totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
+        if(dom.footerProductivity) dom.footerProductivity.innerText = productivity;
+        if(dom.footerTime) dom.footerTime.innerHTML = `<i class="fas fa-sync-alt fa-fw"></i> ${new Date().toLocaleTimeString()}`;
+    }
+
+    // ==================== FIXED ANALYTICS SECTION ====================
+    function updateAnalyticsCharts() {
+        // Ensure projects exist
+        if(!projects || projects.length === 0) {
+            if(dom.analyticsSummary) dom.analyticsSummary.innerText = "0 projects, 0 tasks, 0% complete";
+            return;
+        }
+        
+        // Prepare data
+        const labels = projects.map(p => {
+            let name = p.name || "Unnamed";
+            return name.length > 12 ? name.slice(0,10) + '..' : name;
+        });
+        const tasksTotal = projects.map(p => p.tasks?.length || 0);
+        const tasksDone = projects.map(p => (p.tasks?.filter(t => t.completed).length || 0));
+        
+        const overallTotal = tasksTotal.reduce((a,b) => a + b, 0);
+        const overallDone = tasksDone.reduce((a,b) => a + b, 0);
+        const productivity = overallTotal === 0 ? 0 : Math.round((overallDone / overallTotal) * 100);
+        
+        // Update summary text
+        if(dom.analyticsSummary) {
+            dom.analyticsSummary.innerHTML = `<strong>${projects.length}</strong> projects | <strong>${overallTotal}</strong> total tasks | <strong>${overallDone}</strong> completed | <strong>${productivity}%</strong> complete`;
+        }
+        
+        // Get canvas contexts
+        const ctx1 = document.getElementById('projectChart');
+        const ctx2 = document.getElementById('progressChart');
+        
+        if(!ctx1 || !ctx2) {
+            console.warn("Canvas elements not found");
+            return;
+        }
+        
+        const context1 = ctx1.getContext('2d');
+        const context2 = ctx2.getContext('2d');
+        
+        if(!context1 || !context2) return;
+        
+        // Destroy existing charts if they exist
+        if(projChart && typeof projChart.destroy === 'function') {
+            projChart.destroy();
+            projChart = null;
+        }
+        if(progChart && typeof progChart.destroy === 'function') {
+            progChart.destroy();
+            progChart = null;
+        }
+        
+        // Create new charts
+        try {
+            projChart = new Chart(context1, { 
+                type: 'bar', 
+                data: { 
+                    labels: labels, 
+                    datasets: [
+                        { label: '✅ Completed Tasks', data: tasksDone, backgroundColor: '#3bc9ff', borderRadius: 8, borderSkipped: false },
+                        { label: '📋 Total Tasks', data: tasksTotal, backgroundColor: '#a46eff', borderRadius: 8, borderSkipped: false }
+                    ]
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'top', labels: { color: '#eef5ff', font: { size: 10 } } },
+                        tooltip: { backgroundColor: 'rgba(0,0,0,0.8)', titleColor: '#fff', bodyColor: '#ccc' }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.1)' }, ticks: { color: '#eef5ff' } },
+                        x: { ticks: { color: '#eef5ff', font: { size: 10 } }, grid: { display: false } }
+                    }
+                }
+            });
+            
+            progChart = new Chart(context2, { 
+                type: 'doughnut', 
+                data: { 
+                    labels: ['✅ Completed', '⏳ Remaining'], 
+                    datasets: [{ 
+                        data: [overallDone, Math.max(0, overallTotal - overallDone)], 
+                        backgroundColor: ['#4ade80', '#2c3e66'], 
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }] 
+                }, 
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: { position: 'bottom', labels: { color: '#eef5ff', font: { size: 10 } } },
+                        tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw} tasks (${Math.round((ctx.raw/overallTotal)*100)}%)` } }
+                    }
+                }
+            });
+        } catch(e) {
+            console.error("Chart creation error:", e);
+        }
+    }
+
+    // Render projects (main render function)
+    function renderProjects() {
+        if(!dom.projectsContainer) return;
+        
+        if(!projects.length) {
+            dom.noProjectsMsg?.classList.remove('hidden');
+            dom.projectsContainer.innerHTML = '';
+            updateQuickStats();
+            updateFooterStats();
+            return;
+        }
+        dom.noProjectsMsg?.classList.add('hidden');
+        
+        const fragment = document.createDocumentFragment();
+        const today = new Date().toISOString().slice(0,10);
+        
+        projects.forEach(proj => {
+            const progress = calcProgress(proj);
+            const isDeadlinePassed = proj.deadline && proj.deadline < today;
+            const projectDiv = document.createElement('div');
+            projectDiv.className = 'project-item fade-in';
+            projectDiv.setAttribute('data-project-id', proj.id);
+            
+            projectDiv.innerHTML = `
+                <div class="flex justify-between items-start flex-wrap gap-2">
+                    <div class="flex-1">
+                        <h3 class="font-bold text-base md:text-lg"><i class="fas fa-satellite"></i> ${escapeHtml(proj.name)}</h3>
+                        <div class="text-xs opacity-70 flex flex-wrap gap-2 mt-1">
+                            <span><i class="far fa-calendar"></i> ${proj.deadline || 'no deadline'}</span>
+                            ${isDeadlinePassed ? '<span class="text-red-400"><i class="fas fa-exclamation-triangle"></i> Overdue</span>' : ''}
+                        </div>
+                    </div>
+                    <button class="delete-project-btn text-red-300 hover:text-red-500 text-sm bg-black/20 px-3 py-1 rounded-full" data-id="${proj.id}"><i class="fas fa-trash-alt"></i> Del</button>
+                </div>
+                <div class="progress-bar-bg"><div class="progress-fill" style="width: ${progress}%"></div></div>
+                <div class="text-xs flex justify-between"><span>${Math.round(progress)}% complete</span> <span>📋 ${proj.tasks?.length || 0} tasks</span></div>
+                <div class="mt-3">
+                    <div class="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
+                        <input type="text" id="newTaskInput_${proj.id}" placeholder="New task + deadline" class="text-sm flex-1 min-w-0">
+                        <input type="date" id="taskDue_${proj.id}" class="text-sm w-full sm:w-32">
+                        <button class="add-task-btn bg-emerald-700/70 text-sm px-3 py-2" data-id="${proj.id}"><i class="fas fa-plus"></i> Add</button>
+                    </div>
+                    <div class="mt-3 space-y-2 task-list" data-project="${proj.id}">
+                        ${(proj.tasks || []).map(task => `
+                            <div class="task-item draggable-task" draggable="true" data-task-id="${task.id}" data-project-id="${proj.id}">
+                                <div class="flex items-start gap-2 justify-between flex-wrap">
+                                    <div class="flex items-center gap-2 flex-1 min-w-0">
+                                        <input type="checkbox" class="task-complete" data-task="${task.id}" data-project="${proj.id}" ${task.completed ? 'checked' : ''}>
+                                        <span class="${task.completed ? 'line-through opacity-60' : ''} break-words flex-1">${escapeHtml(task.text)}</span>
+                                        ${task.dueDate ? `<span class="badge text-[10px] flex-shrink-0">📅 ${task.dueDate}</span>` : ''}
+                                    </div>
+                                    <button class="delete-task-btn text-red-400 text-sm px-2" data-task="${task.id}" data-project="${proj.id}"><i class="far fa-trash-alt"></i></button>
+                                </div>
+                                <div class="mt-1 text-xs text-cyan-300 flex flex-wrap items-center gap-2">
+                                    <i class="fas fa-comment-dots"></i> 
+                                    <span class="comment-preview">${task.comments?.length ? task.comments[task.comments.length-1].substring(0,35) : 'add comment'}</span>
+                                    <button class="comment-task-btn text-[10px] bg-gray-700/40 px-2 py-1 rounded-full" data-task="${task.id}" data-project="${proj.id}">💬 Comment</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="mt-2 text-right text-[10px] opacity-60"><i class="fas fa-arrows-alt"></i> Drag tasks to reorder</div>
+                </div>
+            `;
+            fragment.appendChild(projectDiv);
+        });
+        
+        dom.projectsContainer.innerHTML = '';
+        dom.projectsContainer.appendChild(fragment);
+        attachProjectEvents();
+        attachDragDrop();
+        updateRemindersList();
+        renderTeamChat();
+        renderFileList();
+        checkDeadlinesAndNotify();
+        updateQuickStats();
+        updateFooterStats();
+    }
+
+    function attachProjectEvents() {
+        document.querySelectorAll('.delete-project-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.dataset.id);
+                projects = projects.filter(p => p.id !== id);
+                saveAll();
+                renderProjects();
+                showToast('Project deleted');
+            };
+        });
+        
+        document.querySelectorAll('.add-task-btn').forEach(btn => {
+            btn.onclick = () => {
+                const projId = parseInt(btn.dataset.id);
+                const proj = projects.find(p => p.id === projId);
+                if(proj) {
+                    const input = document.getElementById(`newTaskInput_${projId}`);
+                    const dueDateInput = document.getElementById(`taskDue_${projId}`);
+                    const text = input?.value.trim();
+                    if(!text) return showToast('Task name required');
+                    if(!proj.tasks) proj.tasks = [];
+                    proj.tasks.push({
+                        id: Date.now(),
+                        text: text,
+                        completed: false,
+                        dueDate: dueDateInput?.value || null,
+                        comments: []
+                    });
+                    if(input) input.value = '';
+                    if(dueDateInput) dueDateInput.value = '';
+                    saveAll();
+                    renderProjects();
+                    showToast(`Task added`);
+                }
+            };
+        });
+        
+        document.querySelectorAll('.task-complete').forEach(cb => {
+            cb.onchange = (e) => {
+                e.stopPropagation();
+                const taskId = parseInt(cb.dataset.task);
+                const projId = parseInt(cb.dataset.project);
+                const proj = projects.find(p => p.id === projId);
+                const task = proj?.tasks?.find(t => t.id === taskId);
+                if(task) task.completed = cb.checked;
+                saveAll();
+                renderProjects();
+                if(cb.checked) pushNotify('✅ Task done', 'Great progress!');
+            };
+        });
+        
+        document.querySelectorAll('.delete-task-btn').forEach(btn => {
+            btn.onclick = (e) => {
+                e.stopPropagation();
+                const taskId = parseInt(btn.dataset.task);
+                const projId = parseInt(btn.dataset.project);
+                const proj = projects.find(p => p.id === projId);
+                if(proj && proj.tasks) {
+                    proj.tasks = proj.tasks.filter(t => t.id !== taskId);
+                    saveAll();
+                    renderProjects();
+                }
+            };
+        });
+        
+        document.querySelectorAll('.comment-task-btn').forEach(btn => {
+            btn.onclick = () => {
+                const taskId = parseInt(btn.dataset.task);
+                const projId = parseInt(btn.dataset.project);
+                const comment = prompt('✍️ Add comment to this task:');
+                if(comment?.trim()) {
+                    const proj = projects.find(p => p.id === projId);
+                    const task = proj?.tasks?.find(t => t.id === taskId);
+                    if(task) {
+                        if(!task.comments) task.comments = [];
+                        task.comments.push(comment.trim());
+                        saveAll();
+                        renderProjects();
+                        showToast('Comment added');
+                    }
+                }
+            };
+        });
+    }
+
+    let dragSrc = null;
+    function attachDragDrop() {
+        document.querySelectorAll('.draggable-task').forEach(el => {
+            el.setAttribute('draggable', 'true');
+            el.ondragstart = (e) => {
+                dragSrc = { taskId: parseInt(el.dataset.taskId), projectId: parseInt(el.dataset.projectId) };
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', '');
+                el.classList.add('dragging');
+            };
+            el.ondragend = () => { el.classList.remove('dragging'); dragSrc = null; };
+            el.ondragover = (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; };
+            el.ondrop = (e) => {
+                e.preventDefault();
+                if(!dragSrc || dragSrc.projectId !== parseInt(el.dataset.projectId)) return;
+                const proj = projects.find(p => p.id === dragSrc.projectId);
+                if(proj && proj.tasks) {
+                    const srcIndex = proj.tasks.findIndex(t => t.id === dragSrc.taskId);
+                    const destIndex = proj.tasks.findIndex(t => t.id === parseInt(el.dataset.taskId));
+                    if(srcIndex !== -1 && destIndex !== -1) {
+                        const [moved] = proj.tasks.splice(srcIndex, 1);
+                        proj.tasks.splice(destIndex, 0, moved);
+                        saveAll();
+                        renderProjects();
+                        showToast('Task reordered');
+                    }
+                }
+            };
+        });
+    }
+
+    function updateRemindersList() {
+        if(!dom.remindersList) return;
+        dom.remindersList.innerHTML = reminders.map((r, idx) => `
+            <div class="flex justify-between items-center">
+                <span><i class="far fa-clock"></i> ${r.date} — ${escapeHtml(r.text)}</span>
+                <button class="delete-reminder text-red-400 text-xs ml-2 px-2 py-1 rounded-full" data-idx="${idx}">🗑️</button>
+            </div>
+        `).join('');
+        document.querySelectorAll('.delete-reminder').forEach(btn => {
+            btn.onclick = () => {
+                reminders.splice(parseInt(btn.dataset.idx), 1);
+                saveAll();
+                updateRemindersList();
+                showToast('Reminder deleted');
+            };
+        });
+    }
+
+    function renderTeamChat() {
+        if(!dom.chatMessages) return;
+        dom.chatMessages.innerHTML = teamMessages.slice(-20).map(m => 
+            `<div class="text-xs break-words"><i class="fas fa-user-astronaut"></i> <b>Crew</b>: ${escapeHtml(m.text)} <span class="opacity-50 text-[10px]">${m.timestamp}</span></div>`
+        ).join('');
+        dom.chatMessages.scrollTop = dom.chatMessages.scrollHeight;
+    }
+
+    function renderFileList() {
+        if(!dom.fileList) return;
+        dom.fileList.innerHTML = uploadedFiles.map((f, idx) => `
+            <div class="text-xs flex justify-between">
+                <span><i class="fas fa-file-alt"></i> ${escapeHtml(f)}</span>
+                <button class="delete-file text-red-400 text-xs ml-2" data-idx="${idx}">✖</button>
+            </div>
+        `).join('');
+        document.querySelectorAll('.delete-file').forEach(btn => {
+            btn.onclick = () => {
+                uploadedFiles.splice(parseInt(btn.dataset.idx), 1);
+                saveAll();
+                renderFileList();
+                showToast('File removed');
+            };
+        });
+    }
+
+    function checkDeadlinesAndNotify() {
+        const today = new Date().toISOString().slice(0,10);
+        projects.forEach(p => {
+            if(p.deadline === today) pushNotify(`🚀 Deadline: ${p.name}`, `Mission due today!`);
+            if(p.tasks) {
+                p.tasks.forEach(t => { if(t.dueDate === today && !t.completed) pushNotify(`⚠️ Task due`, `${t.text} in ${p.name}`); });
+            }
+        });
+        reminders.forEach(r => { if(r.date === today) pushNotify(`⏰ Reminder`, r.text); });
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    document.getElementById('createProjectBtn')?.addEventListener('click', () => {
+        const name = document.getElementById('projectNameInput')?.value.trim();
+        const deadline = document.getElementById('projectDeadlineInput')?.value;
+        if(!name) return showToast('Project name needed');
+        projects.push({ id: Date.now(), name: name, deadline: deadline, tasks: [] });
+        saveAll();
+        renderProjects();
+        if(document.getElementById('projectNameInput')) document.getElementById('projectNameInput').value = '';
+        if(document.getElementById('projectDeadlineInput')) document.getElementById('projectDeadlineInput').value = '';
+        showToast(`🚀 ${name} launched!`);
+    });
+
+    document.getElementById('sendChatBtn')?.addEventListener('click', () => {
+        const msg = document.getElementById('chatInput')?.value.trim();
+        if(msg) {
+            teamMessages.push({ text: msg, timestamp: new Date().toLocaleTimeString() });
+            if(teamMessages.length > 50) teamMessages.shift();
+            saveAll();
+            renderTeamChat();
+            if(document.getElementById('chatInput')) document.getElementById('chatInput').value = '';
+        }
+    });
+    
+    document.getElementById('addReminderBtn')?.addEventListener('click', () => {
+        const date = document.getElementById('reminderDate')?.value;
+        const text = document.getElementById('reminderText')?.value.trim();
+        if(date && text) {
+            reminders.push({ date, text });
+            saveAll();
+            updateRemindersList();
+            if(document.getElementById('reminderText')) document.getElementById('reminderText').value = '';
+            showToast('Reminder added');
+        }
+    });
+    
+    document.getElementById('fileUploader')?.addEventListener('change', (e) => {
+        if(e.target.files.length) {
+            uploadedFiles.push(e.target.files[0].name + ` (${new Date().toLocaleDateString()})`);
+            saveAll();
+            renderFileList();
+            showToast(`📎 File attached`);
+            e.target.value = '';
+        }
+    });
+
+    document.getElementById('clearCompletedBtn')?.addEventListener('click', () => {
+        projects.forEach(proj => { if(proj.tasks) proj.tasks = proj.tasks.filter(t => !t.completed); });
+        saveAll();
+        renderProjects();
+        showToast('Cleared completed tasks');
+    });
+
+    document.getElementById('exportDataBtn')?.addEventListener('click', () => {
+        const exportData = { projects, teamMessages, reminders, uploadedFiles, exportDate: new Date().toISOString() };
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `galactic-flow-${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Data exported');
+    });
+
+    document.getElementById('voiceSimulateBtn')?.addEventListener('click', () => {
+        const messages = ["🚀 Launch sequence initiated!", "🛸 Need more fuel!", "✨ Great teamwork!", "📡 Signal received", "🌕 Moon landing progress"];
+        teamMessages.push({ text: `🎤 VOICE: ${messages[Math.floor(Math.random() * messages.length)]}`, timestamp: new Date().toLocaleTimeString() });
+        if(teamMessages.length > 50) teamMessages.shift();
+        saveAll();
+        renderTeamChat();
+        showToast('Voice note added');
+    });
+
+    document.getElementById('snoozeRemindersBtn')?.addEventListener('click', () => {
+        const newDate = new Date();
+        newDate.setHours(newDate.getHours() + 1);
+        const formattedDate = newDate.toISOString().slice(0,10);
+        reminders.forEach(r => { r.date = formattedDate; });
+        saveAll();
+        updateRemindersList();
+        showToast('Reminders snoozed for 1 hour');
+    });
+
+    let darkMode = true;
+    document.getElementById('themeToggleBtn')?.addEventListener('click', () => {
+        darkMode = !darkMode;
+        if(darkMode) {
+            document.body.classList.remove('light-theme');
+            document.getElementById('themeIconText').innerText = 'Dark';
+        } else {
+            document.body.classList.add('light-theme');
+            document.getElementById('themeIconText').innerText = 'Light';
+        }
+        // Refresh charts with new theme colors
+        if(document.getElementById('analyticsModal') && !document.getElementById('analyticsModal').classList.contains('hidden')) {
+            updateAnalyticsCharts();
+        }
+    });
+
+    ['socialGithub', 'socialTwitter', 'socialDiscord'].forEach(id => {
+        document.getElementById(id)?.addEventListener('click', (e) => { e.preventDefault(); showToast(`🌌 ${id.replace('social','')} community coming soon`); });
+    });
+
+    // Analytics Modal - FIXED: Properly shows all data
+    document.getElementById('showAnalyticsBtn')?.addEventListener('click', () => {
+        const modal = document.getElementById('analyticsModal');
+        const card = document.getElementById('analyticsCard');
+        if(modal && card) {
+            modal.classList.remove('hidden');
+            document.body.classList.add('modal-open');
+            setTimeout(() => { 
+                card.style.transform = 'scale(1)'; 
+                card.style.opacity = '1'; 
+            }, 10);
+            // Update charts when modal opens
+            setTimeout(() => {
+                updateAnalyticsCharts();
+            }, 100);
+        }
+    });
+    
+    document.getElementById('closeAnalyticsBtn')?.addEventListener('click', () => {
+        const modal = document.getElementById('analyticsModal');
+        const card = document.getElementById('analyticsCard');
+        if(card) { card.style.transform = 'scale(0.95)'; card.style.opacity = '0'; }
+        setTimeout(() => { if(modal) modal.classList.add('hidden'); document.body.classList.remove('modal-open'); }, 200);
+    });
+    
+    document.getElementById('analyticsModal')?.addEventListener('click', (e) => {
+        if(e.target === document.getElementById('analyticsModal')) document.getElementById('closeAnalyticsBtn')?.click();
+    });
+
+    document.getElementById('refreshProjectsBtn')?.addEventListener('click', () => { renderProjects(); showToast('Synced'); });
+    document.getElementById('chatInput')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('sendChatBtn')?.click(); });
+    document.getElementById('reminderText')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') document.getElementById('addReminderBtn')?.click(); });
+
+    setInterval(() => { if(dom.footerTime) dom.footerTime.innerHTML = `<i class="fas fa-sync-alt fa-fw"></i> ${new Date().toLocaleTimeString()}`; }, 1000);
+    setInterval(() => checkDeadlinesAndNotify(), 45000);
+
+    // Initialize app
+    loadData();
+    renderProjects();
+</script>
+</body>
+</html>
